@@ -33,8 +33,8 @@ app.get("/", function(req, res) {
     res.render("home");
 });
 
-app.get("/secret", function(req, res) {
-    res.send("This is the secret");
+app.get("/secret", isLoggedIn, function(req, res) {
+    res.render("secret");
 });
 
 // AUTH ROUTES
@@ -67,11 +67,26 @@ app.get("/login", function(req, res) {
 //login logic
 //middleware
 app.post("/login", passport.authenticate("local", {
-    succesRedirect: "/secret",
+    successRedirect: "/secret",
     failureRedirect: "/login"
 }), function(req, res) {
 
 });
+
+//Logout
+app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/");
+});
+
+// check if user is logged in
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("login");
+}
+
 
 app.listen(3003, function() {
     console.log("The Auth Server has started on port 3003!!");
